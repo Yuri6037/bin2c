@@ -11,18 +11,18 @@ use std::io;
 fn write_header(const_name: &str, output: &str) -> io::Result<()>
 {
     let mut outfile = File::create(&Path::new(output))?;
-    let s = format!("#include <stdlib.h>\n\nextern const size_t {}_SIZE;\nextern const char {}[];", const_name, const_name);
+    let s = format!("#include <stdlib.h>\n\n#ifdef __cplusplus\nextern \"C\"\n{{\n#endif\nextern const size_t {}_SIZE;\nextern const unsigned char {}[];\n#ifdef __cplusplus\n}}\n#endif", const_name, const_name);
 
     outfile.write(s.as_bytes())?;
     return Ok(());
 }
 
-fn bin_to_c(const_name: &str, input: &str, output: &str) -> io::Result<()>
+fn bin_to_c(const_name: &str, hfile: &str, input: &str, output: &str) -> io::Result<()>
 {
     let mut buffer: [u8;512] = [0; 512];
     let mut infile = File::open(&Path::new(input))?;
     let mut outfile = File::create(&Path::new(output))?;
-    let mut globalstr = String::from("#include <stdlib.h>\n\nconst char ") + const_name + "[] = {";
+    let mut globalstr = String::from("#include \"") + hfile + "\"\n\nconst unsigned char " + const_name + "[] = {";
     let mut globallen: usize = 0;
 
     while let size = infile.read(&mut buffer)? {
@@ -54,7 +54,7 @@ fn main() {
     }
     let cfile = String::from(&args[2]) + ".c";
     let hfile = String::from(&args[2]) + ".h";
-    match bin_to_c(&const_name, &args[1], &cfile) {
+    match bin_to_c(&const_name, &hfile, &args[1], &cfile) {
         Err(e) => {
             println!("An error has occured: {}", e);
             process::exit(1);
