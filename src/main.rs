@@ -34,7 +34,7 @@ fn write_header(const_name: &str, output: &str, count: u32, total_len: usize, wr
     let head = "#include <stdlib.h>\n\n#ifdef __cplusplus\nextern \"C\"\n{\n#endif\n\n";
     let foot = "\n#ifdef __cplusplus\n}\n#endif\n";
     let foot2 = format!("#define {}_SIZE {}\n", const_name, total_len);
-    let foot3 = format!("#define {}_BLOCK_COUNT {}\n", const_name, count);
+    let foot3 = format!("#define {}_BLOCK_COUNT {}\n", const_name, count - 1);
 
     outfile.write(head.as_bytes())?;
     for i in 1..count {
