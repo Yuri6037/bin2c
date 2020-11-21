@@ -19,7 +19,7 @@ fn write_header(const_name: &str, output: &str, count: u32, total_len: usize) ->
 
     outfile.write(head.as_bytes())?;
     for i in 1..count {
-        let s = format!("extern const size_t {}_{}_SIZE;\nextern const unsigned char {}_{}[];", const_name, i, const_name, i);
+        let s = format!("extern const size_t {}_{}_SIZE;\nextern const unsigned char {}_{}[];\n", const_name, i, const_name, i);
         outfile.write(s.as_bytes())?;
     }
     outfile.write(foot.as_bytes())?;
